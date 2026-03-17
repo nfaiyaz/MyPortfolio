@@ -66,9 +66,20 @@
       thisForm.querySelector('.loading').classList.remove('d-block');
       if (data.trim() == 'OK') {
         thisForm.querySelector('.sent-message').classList.add('d-block');
-        thisForm.reset(); 
+        thisForm.reset();
       } else {
-        throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
+        // Handle Formspree JSON response
+        try {
+          let jsonResponse = JSON.parse(data);
+          if (jsonResponse.ok === true) {
+            thisForm.querySelector('.sent-message').classList.add('d-block');
+            thisForm.reset();
+          } else {
+            throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action);
+          }
+        } catch (e) {
+          throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action);
+        }
       }
     })
     .catch((error) => {
